@@ -1,0 +1,9 @@
+# logging
+/logs
+
+# ide
+__pycache__/
+/.vscode
+
+# venv
+/.venv
