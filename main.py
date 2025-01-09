@@ -2,6 +2,7 @@ import logging
 import os
 
 from logging.handlers import RotatingFileHandler
+from alor.downloader import AlorDownloader
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,9 @@ if __name__ == "__main__":
     logger.info("Program start")
 
     try:
-        print("hello")
+        # Step 1 - download the data
+        downloader = AlorDownloader()
+        downloader.prepare()
 
     except Exception as ex:
         logger.critical("Something went wrong: %s", repr(ex))
