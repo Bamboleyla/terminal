@@ -42,6 +42,7 @@ if __name__ == "__main__":
         # Step 1 - download the data
         downloader = AlorDownloader()
         downloader.prepare()
+        logger.info("Downloader is prepered")
 
     except Exception as ex:
         logger.critical("Something went wrong: %s", repr(ex))
