@@ -3,6 +3,7 @@ import os
 
 from logging.handlers import RotatingFileHandler
 from alor.downloader import AlorDownloader
+from terminal.terminal import Terminal
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,11 @@ if __name__ == "__main__":
         print("All quotes files have been updated")
 
         # Step 2 - download new data to terminal
+        terminal = Terminal()
+        terminal.prepare()
+
+        # Step 3 - show the terminal
+        terminal.show()
 
     except Exception as ex:
         logger.critical("Something went wrong: %s", repr(ex))

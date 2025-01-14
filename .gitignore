@@ -2,8 +2,10 @@
 /logs
 
 # ide
-__pycache__/
 /.vscode
+
+# cash
+__pycache__/
 
 # venv
 /.venv
@@ -11,5 +13,6 @@ __pycache__/
 # settings
 settings.py
 
-#data
+# data
 /alor/tickers
+/terminal/data
