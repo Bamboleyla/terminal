@@ -17,6 +17,9 @@ class AlorDownloader:
 
     def prepare(self):
 
+        percent_step = 100/len(self.__config.tickers)  # initial percentage
+        percentage = 0.0  # complete percentage
+
         for ticker in self.__config.tickers:
             # Check ticker directory
             if not os.path.exists('alor/tickers/'+ticker+"/"):
@@ -47,8 +50,11 @@ class AlorDownloader:
                 one_month_ago = now - timedelta(days=31)  # Subtract approximately 1 month ago
                 first_day_of_month = one_month_ago.replace(day=1, hour=0, minute=0, second=0, microsecond=0,
                                                            tzinfo=timezone(timedelta(hours=3)))  # Get first day of current month
+                try:
+                    quotes = asyncio.run(api.get_ticker_data(ticker, first_day_of_month))  # Get quotes for period
+                except Exception as e:
+                    logger.error(f"Error getting quotes for {ticker}: {e}")
 
-                quotes = asyncio.run(api.get_ticker_data(ticker, first_day_of_month))  # Get quotes for period
                 # Check if quotes is not empty
                 if not quotes.empty:
                     quotes.to_csv(file_path, index=False)  # save quotes to file
@@ -63,14 +69,15 @@ class AlorDownloader:
 
                 last_write_date = datetime.strptime(
                     quotes.iloc[-1]["DATE"], "%Y%m%d %H:%M:%S").replace(tzinfo=timezone(timedelta(hours=3)))  # Get last write date
-
-                new_quotes = asyncio.run(api.get_ticker_data(ticker, last_write_date))  # Get new quotes for period
+                try:
+                    new_quotes = asyncio.run(api.get_ticker_data(ticker, last_write_date))  # Get new quotes for period
+                except Exception as e:
+                    logger.error(f"Error getting quotes for {ticker}: {e}")
 
                 quotes = pd.concat([quotes.iloc[:-1], new_quotes])  # Combine quotes and new quotes into one DataFrame
                 quotes.to_csv(file_path, index=False)  # save quotes to file
 
                 logger.info(f"Updated quotes file for {ticker}")
-                print(f"Updated quotes file for {ticker}")
 
-        logger.info("All quotes files have been prepared")
-        print("All quotes files have been updated")
+            percentage += percent_step
+            print(f"Downloaded {ticker} quotes, {percentage:.2f}% completed")

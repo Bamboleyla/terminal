@@ -42,7 +42,10 @@ if __name__ == "__main__":
         # Step 1 - download the data
         downloader = AlorDownloader()
         downloader.prepare()
-        logger.info("Downloader is prepered")
+        logger.info("All quotes files have been prepared")
+        print("All quotes files have been updated")
+
+        # Step 2 - download new data to terminal
 
     except Exception as ex:
         logger.critical("Something went wrong: %s", repr(ex))
