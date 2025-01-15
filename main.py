@@ -49,6 +49,8 @@ if __name__ == "__main__":
         # Step 2 - download new data to terminal
         terminal = Terminal()
         terminal.prepare()
+        logger.info("Terminal prepared")
+        print("Terminal prepared")
 
         # Step 3 - show the terminal
         terminal.show()

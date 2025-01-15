@@ -3,6 +3,7 @@ import json
 import asyncio
 import pandas as pd
 import logging
+import uuid
 
 from datetime import datetime, timezone, timedelta
 from alor.config import AlorConfiguration
@@ -31,7 +32,8 @@ class AlorDownloader:
             if not os.path.exists('alor/tickers/'+ticker+"/config.json"):
                 # Create default config
                 default = {
-                    'var_take': 1.5, 'period': [10, 20], 'multiplier': [3, 5]
+                    'indicators': [{'id': uuid.uuid4().hex, 'type': 'Super Trend', 'period': 10, 'multiplier': 3},
+                                   {'id': uuid.uuid4().hex, 'type': 'Super Trend', 'period': 20, 'multiplier': 5}],
                 }
                 # Create config file
                 with open('alor/tickers/'+ticker+"/config.json", 'w') as f:

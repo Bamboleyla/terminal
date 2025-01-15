@@ -23,7 +23,8 @@ class AlorAPI:
 
     async def get_ticker_data(self, ticker: str, start_date: datetime) -> pd.DataFrame:
 
-        df = pd.DataFrame(columns=['TICKER', 'DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOLUME'])  # Create quotes DataFrame
+        df = pd.DataFrame(columns=['TICKER', 'DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOLUME'],
+                          dtype=[object, object, float, float, float, float, float])  # Create quotes DataFrame
 
         try:
             async with websockets.connect(self.ws_url) as websocket:  # connect to websocket
