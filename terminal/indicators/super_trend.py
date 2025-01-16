@@ -12,18 +12,19 @@ class Super_Trend:
         name_ATR = f'ATR_{indicator["period"]}'
 
         # Create a multi-level index for columns
-        quotes.columns = pd.MultiIndex.from_product([quotes.columns, ['']])
+        if not isinstance(quotes.columns, pd.MultiIndex):
+            quotes.columns = pd.MultiIndex.from_product([quotes.columns, ['']])
 
         # Calculating ATR
         atr_values = talib.ATR(quotes['HIGH'].values, quotes['LOW'].values, quotes['CLOSE'].values,
                                timeperiod=period)
 
         # Assign ATR values ​​to the new column
-        quotes.loc[:, (name_indicator, name_ATR)] = atr_values
+        quotes.loc[:, (name_indicator, name_ATR)] = atr_values.round(2)
 
         # Calculate upper and lower SuperTrend lines using the multiplier
-        quotes.loc[:, (name_indicator, 'UPPER_LINE')] = quotes['HIGH'] + (multiplier * quotes[name_indicator][name_ATR])
-        quotes.loc[:, (name_indicator, 'LOWER_LINE')] = quotes['LOW'] - (multiplier * quotes[name_indicator][name_ATR])
+        quotes.loc[:, (name_indicator, 'UPPER_LINE')] = (quotes['HIGH'] + (multiplier * quotes[name_indicator][name_ATR])).round(2)
+        quotes.loc[:, (name_indicator, 'LOWER_LINE')] = (quotes['LOW'] - (multiplier * quotes[name_indicator][name_ATR])).round(2)
 
         # Initialize columns for the SuperTrend values
         quotes.loc[:, (name_indicator, 'ST UPPER_LINE')] = pd.Series(dtype=float)

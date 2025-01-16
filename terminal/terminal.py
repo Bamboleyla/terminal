@@ -30,10 +30,10 @@ class Terminal:
             with open('alor/tickers/SBER/config.json') as json_file:
                 config = json.load(json_file)
                 for indicator in config['indicators']:
-                    if indicator['type'] == 'Super Trend':
+                    if indicator['type'] == 'super_trend':
                         quotes = super_trend.add_indicator(quotes, indicator)
 
-            quotes.to_csv(file_path)
+                quotes.to_csv(file_path, index=False)
             logger.info(f"Created data file for terminal")
         else:
             pass

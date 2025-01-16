@@ -32,8 +32,8 @@ class AlorDownloader:
             if not os.path.exists('alor/tickers/'+ticker+"/config.json"):
                 # Create default config
                 default = {
-                    'indicators': [{'id': uuid.uuid4().hex, 'type': 'Super Trend', 'period': 10, 'multiplier': 3},
-                                   {'id': uuid.uuid4().hex, 'type': 'Super Trend', 'period': 20, 'multiplier': 5}],
+                    'indicators': [{'id': uuid.uuid4().hex[:6], 'type': 'super_trend', 'period': 10, 'multiplier': 3},
+                                   {'id': uuid.uuid4().hex[:6], 'type': 'super_trend', 'period': 20, 'multiplier': 5}],
                 }
                 # Create config file
                 with open('alor/tickers/'+ticker+"/config.json", 'w') as f:
