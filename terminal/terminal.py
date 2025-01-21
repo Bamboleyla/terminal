@@ -43,6 +43,8 @@ class Terminal:
                     if indicator['type'] == 'super_trend':
                         indicator_data = super_trend.calculate_indicator(quotes, indicator)
                         indicator_data.to_csv(f'terminal/data/SBER/indicators/{indicator["id"]}.csv', index=False)
+                        quotes[f'{indicator["show"][0]["column"]}'] = indicator_data['ST_UPPER']
+                        quotes[f'{indicator["show"][1]["column"]}'] = indicator_data['ST_LOWER']
                 quotes.to_csv(file_path, index=False)
             logger.info(f"Created data file for terminal")
         else:
@@ -57,7 +59,15 @@ class Terminal:
 
         data.set_index('DATE', inplace=True)
         data.index = pd.to_datetime(data.index).tz_localize('Etc/GMT-5')
+        data = data.tail(100)
 
-        fplt.candlestick_ochl(data[['OPEN', 'CLOSE', 'HIGH', 'LOW']].tail(100))
-        fplt.add_legend("SBER")
+        with open('alor/tickers/SBER/config.json') as json_file:
+            config = json.load(json_file)
+            for indicator in config['indicators']:
+                if indicator['type'] == 'super_trend':
+                    for item in indicator['show']:
+                        fplt.plot(data[item['column']], legend=item['legend'], color=item['color'], width=item['width'])
+
+        fplt.candlestick_ochl(data[['OPEN', 'CLOSE', 'HIGH', 'LOW']])
+        fplt.add_legend("Ticker-SBER")
         fplt.show()
