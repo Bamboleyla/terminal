@@ -17,11 +17,21 @@ class Terminal:
 
     def prepare(self):
         # **CREATE OR UPDATE DATA**
-        # Check ticker directory
+        # Check directory for terminal data
         if not os.path.exists('terminal/data/'):
-            # Create ticker directory
+            # Create directory for terminal data
             os.makedirs('terminal/data/')
             logger.info(f"Created directory for terminal data")
+
+        if not os.path.exists('terminal/data/SBER'):
+            # Create ticker directory
+            os.makedirs('terminal/data/SBER')
+            logger.info(f"Created directory for SBER data")
+
+        if not os.path.exists('terminal/data/SBER/indicators'):
+            # Create directory for indicators
+            os.makedirs('terminal/data/SBER/indicators')
+            logger.info(f"Created directory for SBER indicators")
 
         file_path = 'terminal/data/sber.csv'  # Path to data file
         # Check if data file exists
@@ -31,8 +41,8 @@ class Terminal:
                 config = json.load(json_file)
                 for indicator in config['indicators']:
                     if indicator['type'] == 'super_trend':
-                        quotes = super_trend.add_indicator(quotes, indicator)
-
+                        indicator_data = super_trend.calculate_indicator(quotes, indicator)
+                        indicator_data.to_csv(f'terminal/data/SBER/indicators/{indicator["id"]}.csv', index=False)
                 quotes.to_csv(file_path, index=False)
             logger.info(f"Created data file for terminal")
         else:
