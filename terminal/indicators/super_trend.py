@@ -4,7 +4,7 @@ import talib
 
 class Super_Trend:
 
-    def calculate_indicator(self, quotes: pd.DataFrame, indicator: dict) -> pd.DataFrame:
+    def calculate_indicator(self, quotes: pd.DataFrame, indicator: dict, start_index: int = None) -> pd.DataFrame:
         # Extracting parameters from the indicator dictionary
         period = indicator['period']
         multiplier = indicator['multiplier']
@@ -27,6 +27,10 @@ class Super_Trend:
         trend = 'lower'
         # Calculating SuperTrend
         for index, row in data.iterrows():
+            if start_index is not None and index < start_index:
+                if index == 0:
+                    trend = 'lower' if not pd.isna(data.loc[start_index, 'ST_LOWER']) else 'upper'
+                continue
             # Check if the upper and lower SuperTrend lines are None
             if pd.isnull(row['UPPER_LINE']) or pd.isnull(row['LOWER_LINE']):
                 continue

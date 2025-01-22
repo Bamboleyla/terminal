@@ -34,21 +34,43 @@ class Terminal:
             logger.info(f"Created directory for SBER indicators")
 
         file_path = 'terminal/data/sber.csv'  # Path to data file
-        # Check if data file exists
-        if not os.path.exists(file_path):
-            quotes = pd.read_csv('alor/tickers/SBER/quotes.csv')
-            with open('alor/tickers/SBER/config.json') as json_file:
-                config = json.load(json_file)
+        quotes = pd.read_csv('alor/tickers/SBER/quotes.csv')
+
+        with open('alor/tickers/SBER/config.json') as json_file:
+            config = json.load(json_file)
+            # Check if data file exists
+            if not os.path.exists(file_path):
+                terminal_data = quotes.copy()  # Copy quotes to terminal data
                 for indicator in config['indicators']:
                     if indicator['type'] == 'super_trend':
                         indicator_data = super_trend.calculate_indicator(quotes, indicator)
                         indicator_data.to_csv(f'terminal/data/SBER/indicators/{indicator["id"]}.csv', index=False)
-                        quotes[f'{indicator["show"][0]["column"]}'] = indicator_data['ST_UPPER']
-                        quotes[f'{indicator["show"][1]["column"]}'] = indicator_data['ST_LOWER']
-                quotes.to_csv(file_path, index=False)
-            logger.info(f"Created data file for terminal")
-        else:
-            pass
+
+                        terminal_data[f'{indicator["show"][0]["column"]}'] = indicator_data['ST_UPPER']
+                        terminal_data[f'{indicator["show"][1]["column"]}'] = indicator_data['ST_LOWER']
+
+                logger.info(f"Data file for terminal was created")
+            else:
+                terminal_data = pd.read_csv(file_path)
+                terminal_data = pd.concat([terminal_data.iloc[:-1], quotes.iloc[(len(terminal_data)-1):]])
+
+                for indicator in config['indicators']:
+                    if indicator['type'] == 'super_trend':
+                        indicator_data = pd.read_csv(f'terminal/data/SBER/indicators/{indicator["id"]}.csv')
+                        start_index = len(indicator_data)-1
+                        indicator_data = pd.concat([indicator_data.iloc[:-1], quotes.iloc[start_index:]])
+
+                        updated_indicator_data = super_trend.calculate_indicator(indicator_data, indicator, start_index)
+                        updated_indicator_data = pd.concat([indicator_data.iloc[:start_index], updated_indicator_data.iloc[start_index:]])
+                        updated_indicator_data = updated_indicator_data[updated_indicator_data.columns.drop('VOLUME')]
+                        updated_indicator_data.to_csv(f'terminal/data/SBER/indicators/{indicator["id"]}.csv', index=False)
+
+                        terminal_data[f'{indicator["show"][0]["column"]}'] = updated_indicator_data['ST_UPPER']
+                        terminal_data[f'{indicator["show"][1]["column"]}'] = updated_indicator_data['ST_LOWER']
+
+                logger.info(f"Data file for terminal was updated")
+
+            terminal_data.to_csv(file_path, index=False)  # Save data to file
 
     def show(self):
         data = pd.read_csv('terminal/data/sber.csv')

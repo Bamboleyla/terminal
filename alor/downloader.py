@@ -73,11 +73,10 @@ class AlorDownloader:
                     quotes.iloc[-1]["DATE"], "%Y%m%d %H:%M:%S").replace(tzinfo=timezone(timedelta(hours=3)))  # Get last write date
                 try:
                     new_quotes = asyncio.run(api.get_ticker_data(ticker, last_write_date))  # Get new quotes for period
+                    quotes = pd.concat([quotes.iloc[:-1], new_quotes])  # Combine quotes and new quotes into one DataFrame
+                    quotes.to_csv(file_path, index=False)  # save quotes to file
                 except Exception as e:
                     logger.error(f"Error getting quotes for {ticker}: {e}")
-
-                quotes = pd.concat([quotes.iloc[:-1], new_quotes])  # Combine quotes and new quotes into one DataFrame
-                quotes.to_csv(file_path, index=False)  # save quotes to file
 
                 logger.info(f"Updated quotes file for {ticker}")
 
