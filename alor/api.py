@@ -21,7 +21,7 @@ class AlorAPI:
         self.ws_url = config.websocket_url  # Get websocket url
         self.access_token = token.get_access_token()['access_token']  # Get access token
 
-    async def get_ticker_data(self, ticker: str, start_date: datetime) -> pd.DataFrame:
+    async def get_ticker_data(self, ticker: str, start_date: datetime, tf: int) -> pd.DataFrame:
 
         df = pd.DataFrame(columns=['TICKER', 'DATE', 'OPEN', 'HIGH', 'LOW', 'CLOSE', 'VOLUME'],
                           )  # Create quotes DataFrame
@@ -31,7 +31,7 @@ class AlorAPI:
                 message = {
                     "opcode": "BarsGetAndSubscribe",
                     "code": ticker,
-                    "tf": "300",
+                    "tf": tf,
                     "from": start_date.timestamp(),
                     "delayed": False,
                     "skipHistory": False,

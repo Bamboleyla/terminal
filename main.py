@@ -42,13 +42,13 @@ if __name__ == "__main__":
     try:
         # Step 1 - download the data
         downloader = AlorDownloader()
-        downloader.prepare()
+        # downloader.prepare()
         logger.info("All quotes files have been prepared")
         print("All quotes files have been updated")
 
         # Step 2 - download new data to terminal
         terminal = Terminal()
-        terminal.prepare()
+        # terminal.prepare()
         logger.info("Terminal prepared")
         print("Terminal prepared")
 
