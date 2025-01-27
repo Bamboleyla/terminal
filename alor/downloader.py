@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 class AlorDownloader:
     def __init__(self):
         self.__config = AlorConfiguration()
+        self.__api = AlorAPI()  # Initialize AlorAPI
 
     def prepare(self):
 
@@ -41,7 +42,6 @@ class AlorDownloader:
                 logger.info(f"Created config file for {ticker}")
 
             file_path = 'alor/tickers/'+ticker+"/quotes.csv"  # Path to quotes file
-            api = AlorAPI()  # Initialize AlorAPI
 
             # **CREATE OR UPDATE QUOTES**
 
@@ -53,7 +53,7 @@ class AlorDownloader:
                 first_day_of_month = one_month_ago.replace(day=1, hour=0, minute=0, second=0, microsecond=0,
                                                            tzinfo=timezone(timedelta(hours=3)))  # Get first day of current month
                 try:
-                    quotes = asyncio.run(api.get_ticker_data(ticker=ticker, start_date=first_day_of_month, tf=300))  # Get quotes for period
+                    quotes = asyncio.run(self.__api.get_ticker_data(ticker=ticker, start_date=first_day_of_month, tf=300))  # Get quotes for period
                 except Exception as e:
                     logger.error(f"Error getting quotes for {ticker}: {e}")
 
@@ -71,8 +71,12 @@ class AlorDownloader:
 
                 last_write_date = datetime.strptime(
                     quotes.iloc[-1]["DATE"], "%Y%m%d %H:%M:%S").replace(tzinfo=timezone(timedelta(hours=3)))  # Get last write date
+                if quotes.iloc[0]["TICKER"] != 'SBER' and (datetime.now(timezone.utc) - last_write_date).days < 7:
+                    percentage += percent_step
+                    print(f"Downloaded {ticker} quotes was skipped, {percentage:.2f}% completed")
+                    continue  # Skip if last write date is less than 7 days ago
                 try:
-                    new_quotes = asyncio.run(api.get_ticker_data(ticker=ticker, start_date=last_write_date, tf=300))  # Get new quotes for period
+                    new_quotes = asyncio.run(self.__api.get_ticker_data(ticker=ticker, start_date=last_write_date, tf=300))  # Get new quotes for period
                     quotes = pd.concat([quotes.iloc[:-1], new_quotes])  # Combine quotes and new quotes into one DataFrame
                     quotes.to_csv(file_path, index=False)  # save quotes to file
                 except Exception as e:

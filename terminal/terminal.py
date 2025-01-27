@@ -79,8 +79,8 @@ class Terminal:
         data = pd.read_csv('terminal/data/SBER/sber.csv')
         last_write_date = datetime.strptime(
             data.iloc[-1]["DATE"], "%Y%m%d %H:%M:%S").replace(tzinfo=timezone(timedelta(hours=3)))
-        # result = asyncio.run(self.__api.get_ticker_data(ticker='SBER', start_date=last_write_date, tf=10))
-        # result.to_csv('terminal/data/ticks.csv', index=False)
+        result = asyncio.run(self.__api.get_ticker_data(ticker='SBER', start_date=last_write_date, tf=10))
+        result.to_csv('terminal/data/ticks.csv', index=False)
         ticks = pd.read_csv('terminal/data/ticks.csv')
         future_date = last_write_date + timedelta(minutes=5)
         ticks['DATE'] = pd.to_datetime(ticks['DATE'], format='%Y%m%d %H:%M:%S').dt.tz_localize('Europe/Moscow').dt.tz_convert('Etc/GMT-3')
