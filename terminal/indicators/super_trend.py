@@ -20,16 +20,10 @@ class Super_Trend:
         data['UPPER_LINE'] = (data['HIGH'] + (multiplier * data['ATR'])).round(2)
         data['LOWER_LINE'] = (data['LOW'] - (multiplier * data['ATR'])).round(2)
 
-        # Initializing columns for SuperTrend indicator values
-        data['ST_UPPER'] = pd.Series(dtype=float)
-        data['ST_LOWER'] = pd.Series(dtype=float)
-
-        trend = 'lower'
+        trend = 'lower' if start_index is None else 'lower' if not pd.isna(data.loc[start_index-1, 'ST_LOWER']) else 'upper'
         # Calculating SuperTrend
         for index, row in data.iterrows():
             if start_index is not None and index < start_index:
-                if index == 0:
-                    trend = 'lower' if not pd.isna(data.loc[start_index, 'ST_LOWER']) else 'upper'
                 continue
             # Check if the upper and lower SuperTrend lines are None
             if pd.isnull(row['UPPER_LINE']) or pd.isnull(row['LOWER_LINE']):

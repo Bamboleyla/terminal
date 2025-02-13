@@ -73,7 +73,7 @@ class AlorDownloader:
                     quotes.iloc[-1]["DATE"], "%Y%m%d %H:%M:%S").replace(tzinfo=timezone(timedelta(hours=3)))  # Get last write date
                 if quotes.iloc[0]["TICKER"] != 'SBER' and (datetime.now(timezone.utc) - last_write_date).days < 7:
                     percentage += percent_step
-                    print(f"Downloaded {ticker} quotes was skipped, {percentage:.2f}% completed")
+                    print(f"Loading {ticker} quotes was skipped, {percentage:.2f}% completed")
                     continue  # Skip if last write date is less than 7 days ago
                 try:
                     new_quotes = asyncio.run(self.__api.get_ticker_data(ticker=ticker, start_date=last_write_date, tf=300))  # Get new quotes for period
