@@ -2,9 +2,9 @@ import finplot as fplt
 import pandas as pd
 import asyncio
 
+from alor.api import AlorAPI
 from datetime import datetime, timezone, timedelta
 from ..indicators.super_trend import Super_Trend
-from alor.api import AlorAPI
 
 super_trend = Super_Trend()
 api = AlorAPI()
@@ -18,7 +18,7 @@ def update_chart(ticker_config: dict, data: pd.DataFrame) -> None:
 
     new_quotes = asyncio.run(api.get_ticker_data(ticker='SBER', start_date=last_write_date, tf=300))  # get new quotes
 
-    terminal_data = pd.concat([data.iloc[:-1], new_quotes]).reset_index(drop=True)  # add new quotes to terminal data and reset index
+    terminal_data = pd.concat([data.iloc[-100:-1], new_quotes]).reset_index(drop=True)  # add new quotes to terminal data and reset index
 
     # calculate and update indicators
     for indicator in ticker_config['indicators']:
@@ -35,6 +35,13 @@ def update_chart(ticker_config: dict, data: pd.DataFrame) -> None:
 
     terminal_data.set_index('DATE', inplace=True)
     terminal_data.index = pd.to_datetime(terminal_data.index).tz_localize('Etc/GMT-5')
+    terminal_data.drop(columns=['TICKER'], inplace=True)
+    terminal_data.to_csv('terminal/data/session_data.csv', index=True)
+
+    for indicator in ticker_config['indicators']:
+        if indicator['type'] == 'super_trend':
+            for item in indicator['show']:
+                fplt.plot(terminal_data[item['column']], color=item['color'], width=item['width'])
 
     fplt.candlestick_ochl(terminal_data[['OPEN', 'CLOSE', 'HIGH', 'LOW']].tail(100))
     fplt.refresh()
