@@ -1,3 +1,5 @@
+"""Main file for Terminal project"""
+
 import logging
 import os
 
@@ -39,21 +41,17 @@ if __name__ == "__main__":
     prepare_logs()  # Prepare logging system
     logger.info("Program start")
 
-    try:
-        # Step 1 - download the data
-        downloader = AlorDownloader()
-        downloader.prepare()
-        logger.info("All quotes files have been prepared")
-        print("All quotes files have been updated")
+    # Step 1 - download the data
+    downloader = AlorDownloader()
+    downloader.prepare()
+    logger.info("All quotes files have been prepared")
+    print("All quotes files have been updated")
 
-        # Step 2 - download new data to terminal
-        terminal = Terminal()
-        terminal.prepare()
-        logger.info("Terminal prepared")
-        print("Terminal prepared")
+    # Step 2 - download new data to terminal
+    terminal = Terminal()
+    terminal.prepare()
+    logger.info("Terminal prepared")
+    print("Terminal prepared")
 
-        # Step 3 - show the terminal
-        terminal.show()
-
-    except Exception as ex:
-        logger.critical("Something went wrong: %s", repr(ex))
+    # Step 3 - show the terminal
+    terminal.show()
