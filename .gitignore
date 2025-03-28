@@ -10,9 +10,6 @@ __pycache__/
 # venv
 /.venv
 
-# settings
-settings.py
-
 # data
 /alor/tickers
 /terminal/data

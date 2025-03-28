@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="terminal",
-    version="0.0.1",
+    version="0.0.2",
     packages=find_packages(),
     install_requires=[
         "asyncio==3.4.3",
@@ -13,6 +13,7 @@ setup(
         "finplot==1.9.6",
         "idna==3.10",
         "numpy==2.2.3",
+        "myLib==0.0.1",
         "pandas==2.2.3",
         "PyQt6==6.8.1",
         "PyQt6-Qt6==6.8.2",

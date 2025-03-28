@@ -1,12 +1,11 @@
 import pandas as pd
-import asyncio
 
 from datetime import datetime, timezone, timedelta
-from alor.api import AlorAPI
+from myLib import Brokers
 from ..indicators.super_trend import Super_Trend
 
 super_trend = Super_Trend()
-api = AlorAPI()
+brokers = Brokers()
 
 
 def update_chart(ticker_config: dict, data: pd.DataFrame, live_objects) -> None:
@@ -18,8 +17,8 @@ def update_chart(ticker_config: dict, data: pd.DataFrame, live_objects) -> None:
     ).replace(tzinfo=timezone(timedelta(hours=3)))
 
     # Request new data
-    new_quotes = asyncio.run(
-        api.get_ticker_data(ticker="SBER", start_date=last_write_date, tf=300)
+    new_quotes = brokers.alor.downloader.get_quotes(
+        ticker="SBER", start_date=last_write_date, tf=300
     )
 
     # We combine old and new data

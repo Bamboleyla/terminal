@@ -1,28 +1,24 @@
 import os
 import json
-import asyncio
 import pandas as pd
 import logging
 import uuid
 
+from myLib import Brokers
 from datetime import datetime, timezone, timedelta
-from alor.config import AlorConfiguration
-from alor.api import AlorAPI
 
 logger = logging.getLogger(__name__)
+brokers = Brokers()
 
 
 class AlorDownloader:
-    def __init__(self):
-        self.__config = AlorConfiguration()
-        self.__api = AlorAPI()  # Initialize AlorAPI
 
     def prepare(self):
 
-        percent_step = 100 / len(self.__config.tickers)  # initial percentage
+        percent_step = 100 / len(["SBER"])  # initial percentage
         percentage = 0.0  # complete percentage
 
-        for ticker in self.__config.tickers:
+        for ticker in ["SBER"]:
             # Check ticker directory
             if not os.path.exists("alor/tickers/" + ticker + "/"):
                 # Create ticker directory
@@ -103,11 +99,10 @@ class AlorDownloader:
                     tzinfo=timezone(timedelta(hours=3)),
                 )  # Get first day of current month
                 try:
-                    quotes = asyncio.run(
-                        self.__api.get_ticker_data(
-                            ticker=ticker, start_date=first_day_of_month, tf=300
-                        )
-                    )  # Get quotes for period
+                    quotes = brokers.alor.downloader.get_quotes(
+                        ticker=ticker, start_date=first_day_of_month, tf=300
+                    )
+                    # Get quotes for period
                 except Exception as e:
                     logger.error(f"Error getting quotes for {ticker}: {e}")
 
@@ -138,10 +133,8 @@ class AlorDownloader:
                     )
                     continue  # Skip if last write date is less than 7 days ago
                 try:
-                    new_quotes = asyncio.run(
-                        self.__api.get_ticker_data(
-                            ticker=ticker, start_date=last_write_date, tf=300
-                        )
+                    new_quotes = brokers.alor.downloader.get_quotes(
+                        ticker=ticker, start_date=last_write_date, tf=300
                     )  # Get new quotes for period
                     quotes = pd.concat(
                         [quotes.iloc[:-1], new_quotes]
