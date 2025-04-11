@@ -14,7 +14,7 @@ class Super_Trend:
         multiplier = indicator["multiplier"]
 
         # Creating a copy of the DataFrame without the VOLUME column
-        data = quotes[quotes.columns.drop("VOLUME")].copy()
+        data = quotes.copy()
 
         # Calculating ATR (Average True Range)
         data["ATR"] = talib.ATR(

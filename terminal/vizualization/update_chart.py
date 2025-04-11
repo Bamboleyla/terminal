@@ -1,6 +1,7 @@
-import pandas as pd
+"""Module for updating graphics and indicators in the terminal."""
 
 from datetime import datetime, timezone, timedelta
+import pandas as pd
 from myLib import Brokers
 from ..indicators.super_trend import Super_Trend
 
@@ -9,6 +10,23 @@ brokers = Brokers()
 
 
 def update_chart(ticker_config: dict, data: pd.DataFrame, live_objects) -> None:
+    """
+    Updates the chart with new data and recalculates indicators.
+
+    Args:
+    - ticker_config (dict): Configuration for the ticker, including indicators.
+    - data (pd.DataFrame): Historical data for the ticker.
+    - live_objects: List of live objects for visualization.
+
+    Returns:
+    - None
+
+    Notes:
+    - This function updates the chart with new data,
+      recalculates indicators, and displays information about the last candle.
+    - It assumes that the data is in the correct format and
+      that the live objects are properly initialized.
+    """
     start_time = datetime.now()
 
     # Get date of last candle in data
@@ -20,6 +38,8 @@ def update_chart(ticker_config: dict, data: pd.DataFrame, live_objects) -> None:
     new_quotes = brokers.alor.downloader.get_quotes(
         ticker="SBER", start_date=last_write_date, tf=300
     )
+
+    new_quotes = new_quotes.dropna(axis=1, how="all")
 
     # We combine old and new data
     terminal_data = pd.concat([data.iloc[-100:-1], new_quotes]).reset_index(drop=True)
@@ -61,8 +81,16 @@ def update_chart(ticker_config: dict, data: pd.DataFrame, live_objects) -> None:
     terminal_data.drop(columns=["TICKER"], inplace=True)
     terminal_data.to_csv("terminal/data/session_data.csv", index=True)
 
+    if terminal_data.index.duplicated().any():
+        print("Warning: Duplicate index values found!")
+        terminal_data = terminal_data[~terminal_data.index.duplicated(keep="last")]
+
     # Update candles
-    live_objects[0].candlestick_ochl(terminal_data[["OPEN", "CLOSE", "HIGH", "LOW"]])
+    live_objects[0].candlestick_ochl(
+        terminal_data[["OPEN", "CLOSE", "HIGH", "LOW"]],
+        xaxis_autorange=True,
+        xaxis_autorange_relayout=True,
+    )
 
     # Update indicators
     indicator_index = 1  # Index for tracking live indicator objects
