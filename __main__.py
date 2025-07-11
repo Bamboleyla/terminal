@@ -6,6 +6,9 @@ import os
 from logging.handlers import RotatingFileHandler
 from alor.downloader import AlorDownloader
 from terminal.terminal import Terminal
+from t_terminal import T_Terminal
+from myLib.strategies import PriceChanelGrid
+from myLib.brokers import Tinkoff
 
 logger = logging.getLogger(__name__)
 
@@ -37,21 +40,64 @@ def prepare_logs() -> None:
 
 
 if __name__ == "__main__":
+    MAIN_MESSAGE = """Choose mode:
+1 - launch Alor terminal;
+2 - launch T terminal
+0 - exit;
+                        
+Please, enter mode:"""
+
+    STRATEGY_MESSAGE = """Choose strategy:
+1 - Strategy PriceChanelGrid
+0 - back to main menu;
+                        
+Please, enter strategy:"""
 
     prepare_logs()  # Prepare logging system
     logger.info("Program start")
 
-    # Step 1 - download the data
-    downloader = AlorDownloader()
-    downloader.prepare()
-    logger.info("All quotes files have been prepared")
-    print("All quotes files have been updated")
+    while True:
+        # Choose main mode
+        mode = int(input(MAIN_MESSAGE))
 
-    # Step 2 - download new data to terminal
-    terminal = Terminal()
-    terminal.prepare()
-    logger.info("Terminal prepared")
-    print("Terminal prepared")
+        if mode == 1:
+            # Step 1 - download the data
+            downloader = AlorDownloader()
+            downloader.prepare()
+            print("All quotes files have been updated")
 
-    # Step 3 - show the terminal
-    terminal.show()
+            # Step 2 - download new data to terminal
+            terminal = Terminal()
+            terminal.prepare()
+            print("Terminal prepared")
+
+            # Step 3 - show the terminal
+            terminal.show()
+            break
+
+        elif mode == 2:
+            while True:
+                # Choose strategy
+                strategy = int(input(STRATEGY_MESSAGE))
+
+                if strategy == 0:
+                    break  # Return to main menu
+                elif strategy == 1:
+                    # Create terminal with selected strategy
+                    broker = Tinkoff()
+                    strategy = PriceChanelGrid(broker)
+                    terminal = T_Terminal(strategy, broker)
+
+                    terminal.prepare()
+                    terminal.run()
+                    break
+                else:
+                    print("Invalid strategy selected. Please try again.")
+            break
+        elif mode == 0:
+            print("Goodbye!")
+            logger.info("Program end")
+            break
+
+        else:
+            print("Invalid mode selected. Please try again.")

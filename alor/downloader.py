@@ -4,11 +4,11 @@ import pandas as pd
 import logging
 import uuid
 
-from myLib import Brokers
+from myLib.brokers import Alor
 from datetime import datetime, timezone, timedelta
 
 logger = logging.getLogger(__name__)
-brokers = Brokers()
+alor = Alor()
 
 
 class AlorDownloader:
@@ -99,7 +99,7 @@ class AlorDownloader:
                     tzinfo=timezone(timedelta(hours=3)),
                 )  # Get first day of current month
                 try:
-                    quotes = brokers.alor.downloader.get_quotes(
+                    quotes = alor.downloader.get_quotes(
                         ticker=ticker, start_date=first_day_of_month, tf=300
                     )
                     # Get quotes for period
@@ -133,7 +133,7 @@ class AlorDownloader:
                     )
                     continue  # Skip if last write date is less than 7 days ago
                 try:
-                    new_quotes = brokers.alor.downloader.get_quotes(
+                    new_quotes = alor.downloader.get_quotes(
                         ticker=ticker, start_date=last_write_date, tf=300
                     )  # Get new quotes for period
                     quotes = pd.concat(

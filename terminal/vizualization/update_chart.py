@@ -2,11 +2,11 @@
 
 from datetime import datetime, timezone, timedelta
 import pandas as pd
-from myLib import Brokers
+from myLib.brokers import Alor
 from ..indicators.super_trend import Super_Trend
 
 super_trend = Super_Trend()
-brokers = Brokers()
+alor = Alor()
 
 
 def update_chart(ticker_config: dict, data: pd.DataFrame, live_objects) -> None:
@@ -35,7 +35,7 @@ def update_chart(ticker_config: dict, data: pd.DataFrame, live_objects) -> None:
     ).replace(tzinfo=timezone(timedelta(hours=3)))
 
     # Request new data
-    new_quotes = brokers.alor.downloader.get_quotes(
+    new_quotes = alor.downloader.get_quotes(
         ticker="SBER", start_date=last_write_date, tf=300
     )
 
