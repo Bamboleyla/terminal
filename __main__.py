@@ -2,6 +2,7 @@
 
 import logging
 import os
+import time
 
 from logging.handlers import RotatingFileHandler
 from alor.downloader import AlorDownloader
@@ -85,12 +86,21 @@ Please, enter strategy:"""
                 elif strategy == 1:
                     # Create terminal with selected strategy
                     broker = Tinkoff()
-                    strategy = PriceChanelGrid(broker)
+
+                    config = {
+                        "indicators": [
+                            {"type": "price_chanel", "period": 30},
+                            {"type": "super_trend", "period": 30, "multiplier": 7},
+                        ],
+                        "share": {"tiker": "SBER", "figi": "BBG004730N88"},
+                    }
+                    strategy = PriceChanelGrid(broker, config)
                     terminal = T_Terminal(strategy, broker)
 
                     terminal.prepare()
-                    terminal.run()
-                    break
+                    while True:
+                        terminal.run()
+                        time.sleep(10)
                 else:
                     print("Invalid strategy selected. Please try again.")
             break
